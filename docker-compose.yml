@@ -1,0 +1,125 @@
+name: dbms
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=$PG_USER
+      - POSTGRES_PASSWORD=$PG_PASSWORD
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=dbms
+    volumes:
+      - ./scripts/postgres:/docker-entrypoint-initdb.d
+      - ./scripts/neo4j/csv:/docker-entrypoint-initdb.d/csv
+      # - ./data/postgres:/var/lib/postgresql/data     # uncomment this line if you want to persist data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-h", "postgres", "-p", "5432", "-U", "$PG_USER", "-d", "dbms"]
+      interval: 20s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+    ports:
+      - 5433:80
+
+
+  cassandra:
+    image: bitnami/cassandra:latest
+    restart: always
+    volumes:
+      - ./scripts/cassandra:/docker-entrypoint-initdb.d/
+#      - ./data/cassandra:/bitnami       # uncomment this line if you want to persist data
+    environment:
+      - CASSANDRA_USER=$CASSANDRA_USER
+      - CASSANDRA_PASSWORD=$CASSANDRA_PASSWORD
+      - CASSANDRA_PASSWORD_SEEDER=yes
+      - CASSANDRA_AUTHENTICATOR=PasswordAuthenticator
+      - CASSANDRA_DATACENTER=dc1
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CASSANDRA_DELAY_START_TIME=0
+    healthcheck:
+      test: [ "CMD", "cqlsh", "-u", "${CASSANDRA_USER}", "-p" ,"${CASSANDRA_PASSWORD}", "-k", "enron"]
+      interval: 20s
+      timeout: 20s
+      retries: 20
+      start_period: 60s
+
+
+  cassandra-web:
+    image: ipushc/cassandra-web
+    environment:
+      - CASSANDRA_HOST=cassandra
+      - CASSANDRA_PORT=9042
+      - CASSANDRA_USERNAME=${CASSANDRA_USER}
+      - CASSANDRA_PASSWORD=${CASSANDRA_PASSWORD}
+      - HOST_PORT=:8083
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    restart: always
+    ports:
+      - 9043:8083
+
+
+  neo4j:
+    image: neo4j:latest
+    volumes:
+      - ./scripts/neo4j:/var/lib/neo4j/import
+#      - ./data/neo4j/logs:/logs                  # uncomment these lines if you want to persist data
+#      - ./data/neo4j/config:/var/lib/neo4j/conf
+#      - ./data/neo4j/data:/data
+#      - ./data/neo4j/plugins:/plugins
+    environment:
+      - NEO4J_AUTH=${NEO_USER}/${NEO_PASSWORD}
+      - NEO_USER=${NEO_USER}
+      - NEO_PASSWORD=${NEO_PASSWORD}
+    ports:
+      - 7474:7474
+      - 7687:7687
+    restart: always
+    healthcheck:
+      test: [ "CMD", "cypher-shell", "-u", "${NEO_USER}", "-p", "${NEO_PASSWORD}", "MATCH () RETURN count(*)"]
+      interval: 10s
+      timeout: 20s
+      retries: 10
+      start_period: 60s
+    entrypoint: ["/var/lib/neo4j/import/neo4j_entrypoint.sh"]
+
+
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_INITDB_DATABASE=dbms
+    volumes:
+      - ./scripts/mongo:/docker-entrypoint-initdb.d/
+    restart: always
+    healthcheck:
+      test: ["CMD", "echo", "db.runCommand('ping').ok", "|", "mongosh", "mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017/dbms", "--quiet"]
+      interval: 20s
+      timeout: 20s
+      retries: 10
+      start_period: 60s
+
+
+  mongoclient:
+    image: mongoclient/mongoclient
+    environment:
+      - MONGOCLIENT_DEFAULT_CONNECTION_URL=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017
+    ports:
+      - 3000:3000
+    depends_on:
+      mongo:
+        condition: service_healthy
+    restart: always
