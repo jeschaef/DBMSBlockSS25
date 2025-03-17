@@ -1,6 +1,6 @@
 #!/bin/bash
 
-psql -U ${POSTGRES_USER} -W ${POSTGRES_PASSWORD} -p 5432 -d dbms <<- END
+psql -U ${POSTGRES_USER} -p 5432 -d dbms <<- END
     CREATE ROLE ${POSTGRES_USER} LOGIN PASSWORD '${POSTGRES_PASSWORD}';
     CREATE ROLE survey INHERIT;
     CREATE ROLE student_ INHERIT;
