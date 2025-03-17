@@ -6,6 +6,7 @@
 2. Install [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) (if not already on your machine)
 3. Clone the repository `git clone https://github.com/jeschaef/DBMSBlockSS25`
 4. Change into the project directory cd DBMSBlockSS25
+5. Download the import_email.cql file from Moodle and copy it to the folder [scripts/cassandra](scripts/cassandra) (too big for this repo, can take some minutes to download)
 
 ## Configuration
 
@@ -21,8 +22,8 @@ The port mappings of the databases/web clients can be changed in the [docker-com
 
 ## Start the containers
 
-You can start the containers with `docker compose up -d` from the project folder. 
-The containers can be brought down with `docker compose down` from the project folder.
+You can start the containers with `docker compose up -d` from the CLI. 
+The containers can be brought down with `docker compose down` from the CLI.
 
 ## Access the databases
 
