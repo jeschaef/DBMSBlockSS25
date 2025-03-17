@@ -16,19 +16,26 @@
 
 Alternatively, you can replace the environment variables with the actual values in the [docker-compose.yml](docker-compose.yml) directly.
 
-If you want to start only specific databases, you can comment out the other databases and their clients before starting the containers.
+If you want to start only specific databases, you can comment out the other databases and their clients before starting the containers. 
+For example, to work on the PostgreSQL assignment, you just need the containers "postgres" and "pgadmin".
 
 The port mappings of the databases/web clients can be changed in the [docker-compose.yml](docker-compose.yml) if necessary.
 
-## Start the containers
+## Start/stop the containers
 
 You can start the containers with `docker compose up -d` from the CLI. 
 The containers can be brought down with `docker compose down` from the CLI.
 
+You can also specify which containers to start, e.g., `docker compose up -d postgres pgadmin` for the PostgreSQL database and client only.
+
 ## Access the databases
 
-Each of the databases can be accessed via a web tool from your browser locally:
+When the containers are running, each of the databases can be accessed via a web tool from your browser locally:
 - PostgreSQL @ [http://localhost:5433](http://localhost:5433)
 - Cassandra @ [http://localhost:9043](http://localhost:9043)
 - Neo4J @ [http://localhost:7474](http://localhost:7474)
 - Mongo @ [http://localhost:3000](http://localhost:3000)
+
+If you updated the port mappings, you have to use different urls accordingly.
+
+The username/email and password are the ones defined in .env
