@@ -26,19 +26,19 @@ END
 
 
 echo "Loading person collection from csv ..."
-mongoimport -d enron -c person --type csv --headerline /docker-entrypoint-initdb.d/csv/person_export_csv
+mongoimport -d $MONGO_INITDB_DATABASE -c person --type csv --headerline /docker-entrypoint-initdb.d/csv/person_export_csv
 
 echo "Loading department collection from csv ..."
-mongoimport -d enron -c department --type csv --headerline /docker-entrypoint-initdb.d/csv/departments_export_csv
+mongoimport -d $MONGO_INITDB_DATABASE -c department --type csv --headerline /docker-entrypoint-initdb.d/csv/departments_export_csv
 
 echo "Loading email collection from csv ..."
-mongoimport -d enron -c email --type csv --headerline /docker-entrypoint-initdb.d/csv/email_without_to_cc_postgres.csv
+mongoimport -d $MONGO_INITDB_DATABASE -c email --type csv --headerline /docker-entrypoint-initdb.d/csv/email_without_to_cc_postgres.csv
 
 echo "Loading cc collection from csv ..."
-mongoimport -d enron -c cc --type csv --headerline /docker-entrypoint-initdb.d/csv/cc_export_csv
+mongoimport -d $MONGO_INITDB_DATABASE -c cc --type csv --headerline /docker-entrypoint-initdb.d/csv/cc_export_csv
 
 echo "Loading knows collection from csv ..."
-mongoimport -d enron -c knows --type csv --headerline /docker-entrypoint-initdb.d/csv/knows_export_csv
+mongoimport -d $MONGO_INITDB_DATABASE -c knows --type csv --headerline /docker-entrypoint-initdb.d/csv/knows_export_csv
 
 echo "Loading to collection from csv ..."
-mongoimport -d enron -c to --type csv --headerline /docker-entrypoint-initdb.d/csv/to_export_csv
+mongoimport -d $MONGO_INITDB_DATABASE -c to --type csv --headerline /docker-entrypoint-initdb.d/csv/to_export_csv

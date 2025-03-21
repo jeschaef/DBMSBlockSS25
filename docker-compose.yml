@@ -47,6 +47,7 @@ services:
       - CASSANDRA_DATACENTER=dc1
       - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
       - CASSANDRA_DELAY_START_TIME=0
+      - CASSANDRA_ENABLE_USER_DEFINED_FUNCTIONS=true
     healthcheck:
       test: [ "CMD", "cqlsh", "-u", "${CASSANDRA_USER}", "-p" ,"${CASSANDRA_PASSWORD}", "-k", "enron"]
       interval: 20s
@@ -101,12 +102,12 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_INITDB_DATABASE=dbms
+      - MONGO_INITDB_DATABASE=enron
     volumes:
       - ./scripts/mongo:/docker-entrypoint-initdb.d/
     restart: always
     healthcheck:
-      test: ["CMD", "echo", "db.runCommand('ping').ok", "|", "mongosh", "mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017/dbms", "--quiet"]
+      test: ["CMD", "echo", "db.runCommand('ping').ok", "|", "mongosh", "mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017/enron", "--quiet"]
       interval: 20s
       timeout: 20s
       retries: 10
