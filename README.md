@@ -39,3 +39,12 @@ When the containers are running, each of the databases can be accessed via a web
 If you updated the port mappings, you have to use different urls accordingly.
 
 The username/email and password are the ones defined in .env
+
+
+# Troubleshooting
+
+You can check logs of all containers with `docker compose logs` or just specific ones, e.g., `docker compose logs postgres`. 
+This can also be done nicely in Docker Desktop (needs to be installed).
+
+
+Generally, the web clients wait for the right database containers to start up. If the (cassandra) container startup takes too long (causes docker to determine containers being unhealthy although they just not finished starting yet), you can increase the healthcheck parameters in docker-compose.yml. Still, a healthy container is not necessarily ready in the sense of all data being loaded already (in particular cassandra takes some time due to the large email import file).
